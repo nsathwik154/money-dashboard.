@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Money Dashboard</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f4f4f4;
+padding:15px;
+margin:0;
+}
+
+.container{
+max-width:500px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:12px;
+margin-bottom:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+input{
+padding:10px;
+border:1px solid #ccc;
+border-radius:8px;
+}
+
+button{
+padding:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.add{
+background:#007bff;
+color:white;
+}
+
+.delete{
+background:red;
+color:white;
+}
+
+.row{
+display:flex;
+gap:8px;
+margin-bottom:10px;
+}
+
+.category{
+display:flex;
+gap:8px;
+margin-bottom:8px;
+}
+
+.amount{
+width:120px;
+}
+
+.total{
+background:green;
+color:white;
+padding:15px;
+border-radius:12px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>💰 Personal Money Dashboard</h2>
+
+<div class="card">
+
+<div class="row">
+<input id="newCategory" placeholder="New Category">
+<button class="add" onclick="addCategory()">Add</button>
+</div>
+
+<div id="categories"></div>
+
+</div>
+
+<div class="total">
+Total Assets: ₹ <span id="total">0</span>
+</div>
+
+</div>
+
+<script>
+
+let data =
+JSON.parse(localStorage.getItem("moneyData"))
+||
+[
+{name:"FD",amount:0},
+{name:"Savings",amount:0},
+{name:"Debtors",amount:0},
+{name:"Week Collect",amount:0},
+{name:"Invest On",amount:0}
+];
+
+function save(){
+localStorage.setItem("moneyData",JSON.stringify(data));
+}
+
+function render(){
+
+let total=0;
+
+let html="";
+
+data.forEach((item,index)=>{
+
+total += Number(item.amount)||0;
+
+html += `
+<div class="category">
+
+<input
+value="${item.name}"
+onchange="changeName(${index},this.value)">
+
+<input
+class="amount"
+type="number"
+value="${item.amount}"
+onchange="changeAmount(${index},this.value)">
+
+<button
+class="delete"
+onclick="removeCategory(${index})">
+X
+</button>
+
+</div>
+`;
+});
+
+document.getElementById("categories").innerHTML=html;
+
+document.getElementById("total").innerText=
+total.toLocaleString('en-IN');
+
+save();
+}
+
+function addCategory(){
+
+let name=
+document.getElementById("newCategory").value.trim();
+
+if(name==="") return;
+
+data.push({
+name:name,
+amount:0
+});
+
+document.getElementById("newCategory").value="";
+
+render();
+}
+
+function removeCategory(index){
+data.splice(index,1);
+render();
+}
+
+function changeName(index,value){
+data[index].name=value;
+save();
+}
+
+function changeAmount(index,value){
+data[index].amount=Number(value)||0;
+render();
+}
+
+render();
+
+</script>
+
+</body>
+</html>
